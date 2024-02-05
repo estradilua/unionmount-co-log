@@ -27,7 +27,7 @@ flag ghcid
 common library-common
   build-depends:
     , async
-    , base          >=4.13.0 && <5
+    , base          >=4.13.0 && <4.21
     , bytestring
     , containers
     , data-default

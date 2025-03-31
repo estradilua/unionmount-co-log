@@ -35,7 +35,6 @@ common library-common
     , filepath
     , filepattern
     , fsnotify      >=0.4.0  && <0.5
-    , lvar
     , monad-logger
     , mtl
     , relude

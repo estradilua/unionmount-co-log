@@ -23,7 +23,6 @@ import Control.Monad.Logger
     MonadLogger,
     logWithoutLoc,
   )
-import Data.LVar qualified as LVar
 import Data.Map.Strict qualified as Map
 import Data.Set qualified as Set
 import System.Directory (canonicalizePath)
@@ -109,12 +108,15 @@ unionMount sources pats ignore model0 handleAction = do
   (x0, xf) <- unionMount' sources pats ignore
   x0' <- interceptExceptions id $ handleAction x0
   let initial = x0' model0
-  lvar <- LVar.new initial
+  var <- newTVarIO initial
   let sender send = do
         Cmd_Remount <- xf $ \change -> do
           change' <- interceptExceptions id $ handleAction change
-          LVar.modify lvar change'
-          x <- LVar.get lvar
+          x <- atomically $ do
+            i <- readTVar var
+            let o = change' i
+            writeTVar var o
+            return o
           send x
         log LevelInfo "Remounting..."
         (a, b) <- unionMount sources pats ignore model0 handleAction

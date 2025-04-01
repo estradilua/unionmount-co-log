@@ -106,12 +106,12 @@ unionMount ::
   m (model, (model -> m ()) -> m ())
 unionMount sources pats ignore model0 handleAction = do
   (x0, xf) <- unionMount' sources pats ignore
-  x0' <- interceptExceptions id $ handleAction x0
+  x0' <- handleAction x0
   let initial = x0' model0
   var <- newTVarIO initial
   let sender send = do
         Cmd_Remount <- xf $ \change -> do
-          change' <- interceptExceptions id $ handleAction change
+          change' <- handleAction change
           x <- atomically $ do
             i <- readTVar var
             let o = change' i
@@ -123,18 +123,6 @@ unionMount sources pats ignore model0 handleAction = do
         send a
         b send
   pure (x0' model0, sender)
-
--- Log and ignore exceptions
---
--- TODO: Make user define-able?
-interceptExceptions :: (MonadIO m, MonadUnliftIO m, MonadLogger m) => a -> m a -> m a
-interceptExceptions default_ f = do
-  try f >>= \case
-    Left (ex :: SomeException) -> do
-      log LevelError $ "Change handler exception: " <> show ex
-      pure default_
-    Right v ->
-      pure v
 
 -------------------------------------
 -- Candidate for moving to a library

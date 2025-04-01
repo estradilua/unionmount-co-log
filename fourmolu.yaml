@@ -1,0 +1,5 @@
+indentation: 2
+comma-style: trailing
+import-export-style: trailing
+record-brace-space: true
+haddock-style: single-line

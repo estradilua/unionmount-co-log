@@ -25,7 +25,7 @@ common library-common
   build-depends:
     async,
     base >=4.13.0 && <4.21,
-    co-log-core,
+    co-log-core >= 0.3.1 && <0.4,
     containers,
     directory,
     filepath,

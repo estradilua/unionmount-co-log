@@ -11,6 +11,7 @@ module System.UnionMount
     FileAction (..),
     RefreshAction (..),
     Change,
+    Logger,
 
     -- * For tests
     chainM,
